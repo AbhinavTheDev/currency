@@ -140,7 +140,7 @@ input[type="number"] {
 }
 
 .select-wrapper::after {
-  content: '▼';
+  content: '';
   font-size: 12px;
   color: var(--on-surface-secondary);
   position: absolute;
@@ -157,31 +157,53 @@ input[type="number"] {
   border: none;
   background-color: transparent;
   border-left: 1px solid var(--border-color);
-  padding: 12px 35px 12px 15px;
+  padding: 12px 15px 12px 15px;
   color: var(--on-surface);
   font-family: 'Poppins', sans-serif;
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
-  min-width: 110px;
-}
-.select::-webkit-scrollbar {
-  width: 10px;
-  background-color: var(--background);
-}
-.select::-webkit-scrollbar-thumb {
-  border-radius: 50px;
-  background-color: var(--on-surface-secondary);
+  min-width: 100px;
 }
 .select:focus + .select-wrapper::after {
-   transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 
-.select option {
-  background-color: var(--surface-hover);
+/* Opt-in to the new customizable select rendering */
+.select,
+::picker(select) {
+  appearance: base-select;
+}
+
+option {
+  display: flex;
+  gap: 10px; 
+  padding: 10px 15px;
+  transition: 0.2s;
+  background-color: var(--surface);
+}
+
+option:hover,
+option:focus {
+  background-color: var(--primary);
+}
+
+/* Style for the main currency code (e.g., USD) */
+.option-label {
+  font-weight: 500;
   color: var(--on-surface);
 }
 
+/* Style for the full currency name */
+.option-text {
+  font-size: 0.8rem;
+  color: var(--on-surface-secondary);
+}
+
+/* When an option is selected and displayed in the button, hide the full name */
+selectedcontent .option-text {
+  display: none;
+}
 .button {
   position: relative;
   transition: all 0.3s ease-in-out;
