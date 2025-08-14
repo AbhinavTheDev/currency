@@ -5,36 +5,122 @@ const toAmountInput = document.getElementById("currency-two");
 const reverseBtn = document.querySelector(".reverse");
 const convertBtn = document.getElementById("convert-btn");
 
-
 const API_BASE_URL = "https://open.er-api.com/v6/latest";
 const CACHE_MAX_AGE = 3600000; // 1 hour in milliseconds
 const CURRENCY_NAMES = {
-  "USD": "United States Dollar", "INR": "Indian Rupee", "EUR": "Euro", "JPY": "Japanese Yen", "GBP": "British Pound Sterling",
-  "AUD": "Australian Dollar", "CAD": "Canadian Dollar", "CHF": "Swiss Franc", "CNY": "Chinese Yuan", "AED": "United Arab Emirates Dirham",
-  "AFN": "Afghan Afghani", "ALL": "Albanian Lek", "AMD": "Armenian Dram", "ANG": "Netherlands Antillean Guilder", "AOA": "Angolan Kwanza",
-  "ARS": "Argentine Peso", "AWG": "Aruban Florin", "AZN": "Azerbaijani Manat", "BAM": "Bosnia-Herzegovina Convertible Mark", "BBD": "Barbadian Dollar",
-  "BDT": "Bangladeshi Taka", "BGN": "Bulgarian Lev", "BHD": "Bahraini Dinar", "BIF": "Burundian Franc", "BMD": "Bermudian Dollar",
-  "BND": "Brunei Dollar", "BOB": "Bolivian Boliviano", "BRL": "Brazilian Real", "BSD": "Bahamian Dollar", "BTN": "Bhutanese Ngultrum",
-  "BWP": "Botswanan Pula", "BYN": "Belarusian Ruble", "BZD": "Belize Dollar", "CDF": "Congolese Franc", "CLP": "Chilean Peso",
-  "COP": "Colombian Peso", "CRC": "Costa Rican Colón", "CUP": "Cuban Peso", "CVE": "Cape Verdean Escudo", "CZK": "Czech Koruna",
-  "DJF": "Djiboutian Franc", "DKK": "Danish Krone", "DOP": "Dominican Peso", "DZD": "Algerian Dinar", "EGP": "Egyptian Pound",
-  "ERN": "Eritrean Nakfa", "ETB": "Ethiopian Birr", "FJD": "Fijian Dollar", "FKP": "Falkland Islands Pound", "FOK": "Faroese Króna",
-  "GEL": "Georgian Lari", "GGP": "Guernsey Pound", "GHS": "Ghanaian Cedi", "GIP": "Gibraltar Pound", "GMD": "Gambian Dalasi",
-  "GNF": "Guinean Franc", "GTQ": "Guatemalan Quetzal", "GYD": "Guyanaese Dollar", "HKD": "Hong Kong Dollar", "HNL": "Honduran Lempira",
-  "HRK": "Croatian Kuna", "HTG": "Haitian Gourde", "HUF": "Hungarian Forint", "IDR": "Indonesian Rupiah", "ILS": "Israeli New Shekel",
-  "IMP": "Manx pound", "IQD": "Iraqi Dinar", "IRR": "Iranian Rial", "ISK": "Icelandic Króna", "JEP": "Jersey Pound",
-  "JMD": "Jamaican Dollar", "JOD": "Jordanian Dinar", "KES": "Kenyan Shilling", "KGS": "Kyrgystani Som", "KHR": "Cambodian Riel",
-  "KID": "Kiribati Dollar", "KMF": "Comorian Franc", "KRW": "South Korean Won", "KWD": "Kuwaiti Dinar", "KYD": "Cayman Islands Dollar",
-  "KZT": "Kazakhstani Tenge", "LAK": "Laotian Kip", "LBP": "Lebanese Pound", "LKR": "Sri Lankan Rupee", "LRD": "Liberian Dollar",
-  "LSL": "Lesotho Loti", "LYD": "Libyan Dinar", "MAD": "Moroccan Dirham", "MDL": "Moldovan Leu", "MGA": "Malagasy Ariary",
-  "MKD": "Macedonian Denar", "MMK": "Myanma Kyat", "MNT": "Mongolian Tugrik", "MOP": "Macanese Pataca", "MRU": "Mauritanian Ouguiya",
-  "MUR": "Mauritian Rupee", "MVR": "Maldivian Rufiyaa", "MWK": "Malawian Kwacha", "MXN": "Mexican Peso", "MYR": "Malaysian Ringgit",
-  "MZN": "Mozambican Metical", "NAD": "Namibian Dollar", "NGN": "Nigerian Naira", "NIO": "Nicaraguan Córdoba", "NOK": "Norwegian Krone",
-  "NPR": "Nepalese Rupee", "NZD": "New Zealand Dollar", "OMR": "Omani Rial", "PAB": "Panamanian Balboa", "ZMW": "Zambian Kwacha", "ZWL": "Zimbabwean Dollar"
+  USD: "United States Dollar",
+  INR: "Indian Rupee",
+  EUR: "Euro",
+  JPY: "Japanese Yen",
+  GBP: "British Pound Sterling",
+  AUD: "Australian Dollar",
+  CAD: "Canadian Dollar",
+  CHF: "Swiss Franc",
+  CNY: "Chinese Yuan",
+  AED: "United Arab Emirates Dirham",
+  AFN: "Afghan Afghani",
+  ALL: "Albanian Lek",
+  AMD: "Armenian Dram",
+  ANG: "Netherlands Antillean Guilder",
+  AOA: "Angolan Kwanza",
+  ARS: "Argentine Peso",
+  AWG: "Aruban Florin",
+  AZN: "Azerbaijani Manat",
+  BAM: "Bosnia-Herzegovina Convertible Mark",
+  BBD: "Barbadian Dollar",
+  BDT: "Bangladeshi Taka",
+  BGN: "Bulgarian Lev",
+  BHD: "Bahraini Dinar",
+  BIF: "Burundian Franc",
+  BMD: "Bermudian Dollar",
+  BND: "Brunei Dollar",
+  BOB: "Bolivian Boliviano",
+  BRL: "Brazilian Real",
+  BSD: "Bahamian Dollar",
+  BTN: "Bhutanese Ngultrum",
+  BWP: "Botswanan Pula",
+  BYN: "Belarusian Ruble",
+  BZD: "Belize Dollar",
+  CDF: "Congolese Franc",
+  CLP: "Chilean Peso",
+  COP: "Colombian Peso",
+  CRC: "Costa Rican Colón",
+  CUP: "Cuban Peso",
+  CVE: "Cape Verdean Escudo",
+  CZK: "Czech Koruna",
+  DJF: "Djiboutian Franc",
+  DKK: "Danish Krone",
+  DOP: "Dominican Peso",
+  DZD: "Algerian Dinar",
+  EGP: "Egyptian Pound",
+  ERN: "Eritrean Nakfa",
+  ETB: "Ethiopian Birr",
+  FJD: "Fijian Dollar",
+  FKP: "Falkland Islands Pound",
+  FOK: "Faroese Króna",
+  GEL: "Georgian Lari",
+  GGP: "Guernsey Pound",
+  GHS: "Ghanaian Cedi",
+  GIP: "Gibraltar Pound",
+  GMD: "Gambian Dalasi",
+  GNF: "Guinean Franc",
+  GTQ: "Guatemalan Quetzal",
+  GYD: "Guyanaese Dollar",
+  HKD: "Hong Kong Dollar",
+  HNL: "Honduran Lempira",
+  HRK: "Croatian Kuna",
+  HTG: "Haitian Gourde",
+  HUF: "Hungarian Forint",
+  IDR: "Indonesian Rupiah",
+  ILS: "Israeli New Shekel",
+  IMP: "Manx pound",
+  IQD: "Iraqi Dinar",
+  IRR: "Iranian Rial",
+  ISK: "Icelandic Króna",
+  JEP: "Jersey Pound",
+  JMD: "Jamaican Dollar",
+  JOD: "Jordanian Dinar",
+  KES: "Kenyan Shilling",
+  KGS: "Kyrgystani Som",
+  KHR: "Cambodian Riel",
+  KID: "Kiribati Dollar",
+  KMF: "Comorian Franc",
+  KRW: "South Korean Won",
+  KWD: "Kuwaiti Dinar",
+  KYD: "Cayman Islands Dollar",
+  KZT: "Kazakhstani Tenge",
+  LAK: "Laotian Kip",
+  LBP: "Lebanese Pound",
+  LKR: "Sri Lankan Rupee",
+  LRD: "Liberian Dollar",
+  LSL: "Lesotho Loti",
+  LYD: "Libyan Dinar",
+  MAD: "Moroccan Dirham",
+  MDL: "Moldovan Leu",
+  MGA: "Malagasy Ariary",
+  MKD: "Macedonian Denar",
+  MMK: "Myanma Kyat",
+  MNT: "Mongolian Tugrik",
+  MOP: "Macanese Pataca",
+  MRU: "Mauritanian Ouguiya",
+  MUR: "Mauritian Rupee",
+  MVR: "Maldivian Rufiyaa",
+  MWK: "Malawian Kwacha",
+  MXN: "Mexican Peso",
+  MYR: "Malaysian Ringgit",
+  MZN: "Mozambican Metical",
+  NAD: "Namibian Dollar",
+  NGN: "Nigerian Naira",
+  NIO: "Nicaraguan Córdoba",
+  NOK: "Norwegian Krone",
+  NPR: "Nepalese Rupee",
+  NZD: "New Zealand Dollar",
+  OMR: "Omani Rial",
+  PAB: "Panamanian Balboa",
+  ZMW: "Zambian Kwacha",
+  ZWL: "Zimbabwean Dollar",
 };
 const CURRENCIES = Object.keys(CURRENCY_NAMES);
-
-
 
 /**
  * Populates a select element with currency options.
@@ -42,18 +128,18 @@ const CURRENCIES = Object.keys(CURRENCY_NAMES);
  * @param {string} defaultCurrency - The currency to select by default.
  */
 function populateDropdown(selectElement, defaultCurrency) {
-  const optionsHTML = CURRENCIES
-    .map(currency => {
-        const fullName = CURRENCY_NAMES[currency] || currency;
-        // Create a multi-line layout within the option
-        return `<option value="${currency}" ${currency === defaultCurrency ? "selected" : ""}>
+  const optionsHTML = CURRENCIES.map((currency) => {
+    const fullName = CURRENCY_NAMES[currency] || currency;
+    // Create a multi-line layout within the option
+    return `<option value="${currency}" ${
+      currency === defaultCurrency ? "selected" : ""
+    }>
                     <span class="option-label">${currency}</span>
                     <span class="option-text">${fullName}</span>
-                </option>`
-    })
-    .join("");
+                </option>`;
+  }).join("");
   // Append the options after the <button> element
-  selectElement.insertAdjacentHTML('beforeend', optionsHTML);
+  selectElement.insertAdjacentHTML("beforeend", optionsHTML);
 }
 
 /**
@@ -108,7 +194,6 @@ async function fetchWithCache(key, fetcher, maxAge) {
   return data;
 }
 
-
 async function convertCurrency() {
   const fromCurrency = fromCurrencySelect.value;
   const toCurrency = toCurrencySelect.value;
@@ -123,7 +208,11 @@ async function convertCurrency() {
 
   // Use a dynamic cache key based on the "from" currency
   const cacheKey = `rates-${fromCurrency}`;
-  const rates = await fetchWithCache(cacheKey, () => fetchRates(fromCurrency), CACHE_MAX_AGE);
+  const rates = await fetchWithCache(
+    cacheKey,
+    () => fetchRates(fromCurrency),
+    CACHE_MAX_AGE
+  );
 
   if (rates && rates[toCurrency]) {
     const rate = rates[toCurrency];
@@ -135,7 +224,6 @@ async function convertCurrency() {
     convertBtn.innerText = "Convert";
   }
 }
-
 
 convertBtn.addEventListener("click", convertCurrency);
 fromCurrencySelect.addEventListener("change", convertCurrency);
@@ -157,4 +245,6 @@ function initialize() {
   convertCurrency(); // Perform an initial conversion on load
 }
 
-initialize();
+export const converter = {
+  init: initialize,
+};

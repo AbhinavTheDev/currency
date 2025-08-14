@@ -20,28 +20,128 @@ body {
   height: 100vh;
   background-color: var(--background);
   color: var(--on-surface);
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 main {
-  height: 100%;
   display: flex;
+  position: relative; /* Needed for absolute positioning of the sidebar on mobile */
+}
+aside {
+  width: 250px; /* Expanded width */
+  height: 100vh;
+  padding: 20px;
+  font-size: large; /* Adjusted font size */
+  background-color: var(--background);
+  transition: width 0.3s ease, transform 0.3s ease; /* Smooth transition */
+  flex-shrink: 0; /* Prevent sidebar from shrinking */
+}
+
+/* Styles for the closed sidebar */
+aside.closed {
+  width: 80px; /* Collapsed width */
+}
+
+aside.closed .link-text,
+aside.closed .brand-logo {
+  display: none; /* Hide text and brand logo */
+}
+
+aside.closed .sideAction {
+  justify-content: center; /* Center the toggle icon */
+}
+
+aside.closed .sideElement {
+  justify-content: center; /* Center the navigation icons */
+}
+
+.sideAction {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+.sideAction > button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+aside > p {
+  display: flex;
+  gap: 15px; /* Increased gap */
+  cursor: pointer;
+  padding: 10px 5px; /* Add some padding */
+  border-radius: 6px;
+}
+aside > p:hover {
+  background-color: var(--surface);
+  color: var(--on-surface);
+}
+.newsContainer {
+  justify-content: flex-start;
+}
+.content {
+  flex-grow: 1; /* Allow content to fill remaining space */
+  width: 100%; /* Use available width */
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  margin-right: 2px;
+  transition: margin-left 0.3s ease; /* Smooth transition for content shift */
+}
+.converterContainer,
+.newsContainer {
+  width: 100%;
+  height: 98%;
   gap: 30px;
   flex-direction: column;
-  justify-content: center;
+  justify-content: center; /* Align content to the top */
   align-items: center;
   padding: 20px;
-  background: rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(5px);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header {
   display: flex;
   gap: 10px;
   font-weight: 600;
+}
+
+.newsBoard {
+  width: 100%;
+  flex-grow: 1; /* Allow the board to fill available space */
+  overflow-y: auto; /* Add vertical scroll on overflow */
+  padding: 0 15px;
+  border-radius: 10px;
+}
+
+/* Custom scrollbar for a cleaner look */
+.newsBoard::-webkit-scrollbar {
+  width: 8px;
+}
+.newsBoard::-webkit-scrollbar-track {
+  background: var(--surface);
+  border-radius: 10px;
+}
+.newsBoard::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 10px;
+}
+.newsBoard::-webkit-scrollbar-thumb:hover {
+  background: #699dff;
+}
+
+#newsList {
+  justify-content: center;
+}
+
+#newsList a {
+  text-decoration: none; /* Remove underline from news card links */
+  color: inherit;
 }
 
 .converter {
@@ -117,7 +217,7 @@ main {
   background: none;
   color: var(--on-surface);
   font-size: 16px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .search-label input::placeholder {
@@ -140,7 +240,7 @@ input[type="number"] {
 }
 
 .select-wrapper::after {
-  content: '';
+  content: "";
   font-size: 12px;
   color: var(--on-surface-secondary);
   position: absolute;
@@ -159,7 +259,7 @@ input[type="number"] {
   border-left: 1px solid var(--border-color);
   padding: 12px 15px 12px 15px;
   color: var(--on-surface);
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
@@ -177,7 +277,7 @@ input[type="number"] {
 
 option {
   display: flex;
-  gap: 10px; 
+  gap: 10px;
   padding: 10px 15px;
   transition: 0.2s;
   background-color: var(--surface);
@@ -224,7 +324,7 @@ selectedcontent .option-text {
   overflow: hidden;
   font-size: 16px;
   width: 100%;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .icon {
@@ -263,18 +363,26 @@ selectedcontent .option-text {
 }
 
 @keyframes shine {
-  0% {
-    left: -100px;
-  }
-  60% {
-    left: 100%;
-  }
   to {
     left: 100%;
   }
 }
 
-@media (max-width: 640px) {
+/* --- Responsive Sidebar Styles --- */
+@media (max-width: 768px) {
+  aside {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    height: 100%;
+  }
+  .content {
+    /* Add margin to make space for the collapsed sidebar icons */
+    margin-left: 80px;
+    width: calc(100% - 80px);
+  }
+
   .inputs {
     flex-direction: column;
   }
