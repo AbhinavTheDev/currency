@@ -39,31 +39,18 @@ function createNewsCard(thumbnail, title, description, date, source = "News") {
   });
 
   return `
-  <div style="
-    width: 340px;
-    border-radius: 14px;
-    overflow: hidden;
-    background: #232946;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-    font-family: 'Poppins', Arial, sans-serif;
-    transition: box-shadow 0.2s;
-    cursor: pointer;
-    margin-bottom: 10px;
-    border: 1px solid #eebbc3;
-  "
-  onmouseover="this.style.boxShadow='0 12px 32px rgba(0,0,0,0.28)';"
-  onmouseout="this.style.boxShadow='0 8px 24px rgba(0,0,0,0.18)';">
-    <div style="height: 160px; background: #eebbc3;">
+  <div class="news-card">
+    <div class="news-card-img-container">
       <img src="${
         thumbnail || fallbackImg
-      }" alt="News" style="width:100%;height:100%;object-fit:cover;">
+      }" alt="News" class="news-card-img">
     </div>
-    <div style="padding: 18px;">
-      <h2 style="margin:0 0 10px 0;font-size:18px;color:#eebbc3;">${title}</h2>
-      <p style="margin:0 0 12px 0;font-size:13px;color:#b8c1ec;">${cleanDesc}</p>
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;">
-        <span style="color:#eebbc3;font-weight:500;">${source}</span>
-        <span style="color:#b8c1ec;">${formattedDate}</span>
+    <div class="news-card-body">
+      <h2 class="news-card-title">${title}</h2>
+      <p class="news-card-desc">${cleanDesc}</p>
+      <div class="news-card-footer">
+        <span class="news-card-source">${source}</span>
+        <span class="news-card-date">${formattedDate}</span>
       </div>
     </div>
   </div>
