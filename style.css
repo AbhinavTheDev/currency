@@ -34,7 +34,7 @@ aside {
   font-size: large; /* Adjusted font size */
   background-color: var(--background);
   transition: width 0.3s ease, transform 0.3s ease; /* Smooth transition */
-  flex-shrink: 0; /* Prevent sidebar from shrinking */
+  flex-shrink: 0;
 }
 
 /* Styles for the closed sidebar */
@@ -58,6 +58,7 @@ aside.closed .sideElement {
 .sideAction {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 5px;
   margin-bottom: 10px;
 }
@@ -65,6 +66,20 @@ aside.closed .sideElement {
   background: transparent;
   border: none;
   cursor: pointer;
+  color: var(--on-surface);
+}
+#closeSidebarBtn {
+  display: none;
+}
+#sidebarToggle {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 99;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: none;
 }
 aside > p {
   display: flex;
@@ -86,12 +101,14 @@ aside > p:hover {
   height: 100vh;
   display: flex;
   align-items: center;
-  margin-right: 2px;
+  justify-content: center;
   transition: margin-left 0.3s ease; /* Smooth transition for content shift */
+  position: relative;
 }
+
 .converterContainer,
 .newsContainer {
-  width: 100%;
+  width: 98%;
   height: 98%;
   gap: 30px;
   flex-direction: column;
@@ -334,7 +351,6 @@ input[type="number"] {
   transform: rotate(180deg);
 }
 
-/* Opt-in to the new customizable select rendering */
 .select,
 ::picker(select) {
   appearance: base-select;
@@ -353,19 +369,16 @@ option:focus {
   background-color: var(--primary);
 }
 
-/* Style for the main currency code (e.g., USD) */
 .option-label {
   font-weight: 500;
   color: var(--on-surface);
 }
 
-/* Style for the full currency name */
 .option-text {
   font-size: 0.8rem;
   color: var(--on-surface-secondary);
 }
 
-/* When an option is selected and displayed in the button, hide the full name */
 selectedcontent .option-text {
   display: none;
 }
@@ -436,22 +449,50 @@ selectedcontent .option-text {
 /* --- Responsive Sidebar Styles --- */
 @media (max-width: 768px) {
   aside {
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
-    z-index: 1000;
+    z-index: 100;
     height: 100%;
+    transform: translateX(-100%);
+    width: 100%; /* Make sidebar full-width on mobile */
   }
+  aside.open {
+    transform: translateX(0); /* Show sidebar */
+  }
+
+  /* On mobile, the 'closed' class from desktop should not affect layout */
+  aside.closed {
+    width: 100%; /* Ensure it stays full-width if open */
+  }
+  aside.closed .link-text,
+  aside.closed .brand-logo {
+    display: block; /* Always show text when sidebar is open on mobile */
+  }
+  aside.closed .sideAction,
+  aside.closed .sideElement {
+    justify-content: initial; /* Reset alignment for mobile */
+  }
+
+  #sidebarToggle {
+    display: block; /* Show hamburger icon */
+  }
+
+  #closeSidebarBtn {
+    display: block; /* Show close icon in the sidebar */
+  }
+
   .header h1 {
-    font-size: 1.2rem; /* Adjust font size for smaller screens */
+    font-size: 1.2rem;
   }
   .header span {
-    font-size: x-small; /* Adjust font size for smaller screens */
+    font-size: x-small;
   }
-  .content {
-    /* Add margin to make space for the collapsed sidebar icons */
-    margin-left: 80px;
-    width: calc(100% - 80px);
+  /* Content should take full width on mobile, ignoring desktop classes */
+  .content,
+  .content.sidebar-closed {
+    margin-left: 0;
+    width: 100%;
   }
 
   .inputs {
