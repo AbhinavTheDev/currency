@@ -1,11 +1,16 @@
 import { converter } from "./converter.js";
 import { getNews } from "./news.js";
+import { initFMC } from "./fmc.js";
+
+// --- UI Elements ---
 
 const events = {
   converterOpt: document.getElementById("converterOptBtn"),
   newsOpt: document.getElementById("newsOptBtn"),
+  fmcOpt: document.getElementById("fmcOptBtn"),
   converterContainer: document.getElementById("converterContainer"),
   newsContainer: document.getElementById("newsContainer"),
+  fmcContainer: document.getElementById("fmcContainer"),
   content: document.querySelector(".content"),
   sidebar: document.querySelector("aside"),
   mobileSidebarToggle: document.getElementById("sidebarToggle"),
@@ -20,9 +25,15 @@ const showPage = (page) => {
   if (page === "news") {
     events.converterContainer.style.display = "none";
     events.newsContainer.style.display = "flex";
+    events.fmcContainer.style.display = "none";
+  } else if (page === "fmc") {
+    events.fmcContainer.style.display = "flex";
+    events.newsContainer.style.display = "none";
+    events.converterContainer.style.display = "none";
   } else {
     events.converterContainer.style.display = "flex";
     events.newsContainer.style.display = "none";
+    events.fmcContainer.style.display = "none";
   }
 };
 
@@ -31,7 +42,11 @@ function handleHashChange() {
   if (hash === "#news") {
     showPage("news");
     if (typeof getNews === "function") getNews();
-  } else {
+  } else if (hash === "#fmc") {
+    showPage("fmc")
+    if (typeof initFMC === "function") initFMC();
+  }
+  else {
     showPage("converter");
     if (converter && typeof converter.init === "function") converter.init();
   }
@@ -112,6 +127,9 @@ if (events.converterOpt) {
 }
 if (events.newsOpt) {
   events.newsOpt.addEventListener("click", () => navClickHandler("#news"));
+}
+if (events.fmcOpt) {
+  events.fmcOpt.addEventListener("click", () => navClickHandler("#fmc"));
 }
 
 window.addEventListener("hashchange", handleHashChange);
