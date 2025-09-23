@@ -25,34 +25,43 @@ body {
 
 main {
   display: flex;
-  position: relative; /* Needed for absolute positioning of the sidebar on mobile */
+  position: relative;
+  /* Needed for absolute positioning of the sidebar on mobile */
 }
+
 aside {
-  width: 250px; /* Expanded width */
+  width: 250px;
+  /* Expanded width */
   height: 100vh;
   padding: 20px;
-  font-size: large; /* Adjusted font size */
+  font-size: large;
+  /* Adjusted font size */
   background-color: var(--background);
-  transition: width 0.3s ease, transform 0.3s ease; /* Smooth transition */
+  transition: width 0.3s ease, transform 0.3s ease;
+  /* Smooth transition */
   flex-shrink: 0;
 }
 
 /* Styles for the closed sidebar */
 aside.closed {
-  width: 80px; /* Collapsed width */
+  width: 80px;
+  /* Collapsed width */
 }
 
 aside.closed .link-text,
 aside.closed .brand-logo {
-  display: none; /* Hide text and brand logo */
+  display: none;
+  /* Hide text and brand logo */
 }
 
 aside.closed .sideAction {
-  justify-content: center; /* Center the toggle icon */
+  justify-content: center;
+  /* Center the toggle icon */
 }
 
 aside.closed .sideElement {
-  justify-content: center; /* Center the navigation icons */
+  justify-content: center;
+  /* Center the navigation icons */
 }
 
 .sideAction {
@@ -62,15 +71,18 @@ aside.closed .sideElement {
   padding: 5px;
   margin-bottom: 10px;
 }
-.sideAction > button {
+
+.sideAction>button {
   background: transparent;
   border: none;
   cursor: pointer;
   color: var(--on-surface);
 }
+
 #closeSidebarBtn {
   display: none;
 }
+
 #sidebarToggle {
   position: absolute;
   top: 20px;
@@ -81,38 +93,49 @@ aside.closed .sideElement {
   cursor: pointer;
   display: none;
 }
-aside > p {
+
+aside>p {
   display: flex;
-  gap: 15px; /* Increased gap */
+  gap: 15px;
+  /* Increased gap */
   cursor: pointer;
-  padding: 10px 5px; /* Add some padding */
+  padding: 10px 5px;
+  /* Add some padding */
   border-radius: 6px;
 }
-aside > p:hover {
+
+aside>p:hover {
   background-color: var(--surface);
   color: var(--on-surface);
 }
+
 .newsContainer {
   justify-content: flex-start;
 }
+
 .content {
-  flex-grow: 1; /* Allow content to fill remaining space */
-  width: 100%; /* Use available width */
+  flex-grow: 1;
+  /* Allow content to fill remaining space */
+  width: 100%;
+  /* Use available width */
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: margin-left 0.3s ease; /* Smooth transition for content shift */
+  transition: margin-left 0.3s ease;
+  /* Smooth transition for content shift */
   position: relative;
 }
 
 .converterContainer,
-.newsContainer {
+.newsContainer,
+.fmcContainer {
   width: 98%;
   height: 98%;
   gap: 30px;
   flex-direction: column;
-  justify-content: center; /* Align content to the top */
+  justify-content: center;
+  /* Align content to the top */
   align-items: center;
   padding: 20px;
   background: rgba(0, 0, 0, 0.1);
@@ -127,15 +150,19 @@ aside > p:hover {
   gap: 10px;
   font-weight: 600;
 }
+
 .header span {
   font-size: small;
   display: flex;
   gap: 5px;
 }
+
 .newsBoard {
   width: 100%;
-  flex-grow: 1; /* Allow the board to fill available space */
-  overflow-y: auto; /* Add vertical scroll on overflow */
+  flex-grow: 1;
+  /* Allow the board to fill available space */
+  overflow-y: auto;
+  /* Add vertical scroll on overflow */
   padding: 0 15px;
   border-radius: 10px;
 }
@@ -144,14 +171,17 @@ aside > p:hover {
 .newsBoard::-webkit-scrollbar {
   width: 8px;
 }
+
 .newsBoard::-webkit-scrollbar-track {
   background: var(--surface);
   border-radius: 10px;
 }
+
 .newsBoard::-webkit-scrollbar-thumb {
   background: var(--primary);
   border-radius: 10px;
 }
+
 .newsBoard::-webkit-scrollbar-thumb:hover {
   background: #699dff;
 }
@@ -161,7 +191,8 @@ aside > p:hover {
 }
 
 #newsList a {
-  text-decoration: none; /* Remove underline from news card links */
+  text-decoration: none;
+  /* Remove underline from news card links */
   color: inherit;
 }
 
@@ -311,6 +342,7 @@ input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
 input[type="number"] {
   -moz-appearance: textfield;
 }
@@ -347,7 +379,8 @@ input[type="number"] {
   cursor: pointer;
   min-width: 100px;
 }
-.select:focus + .select-wrapper::after {
+
+.select:focus+.select-wrapper::after {
   transform: rotate(180deg);
 }
 
@@ -382,6 +415,7 @@ option:focus {
 selectedcontent .option-text {
   display: none;
 }
+
 .button {
   position: relative;
   transition: all 0.3s ease-in-out;
@@ -429,12 +463,10 @@ selectedcontent .option-text {
   position: absolute;
   width: 100px;
   height: 100%;
-  background-image: linear-gradient(
-    120deg,
-    rgba(255, 255, 255, 0) 30%,
-    rgba(255, 255, 255, 0.8),
-    rgba(255, 255, 255, 0) 70%
-  );
+  background-image: linear-gradient(120deg,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(255, 255, 255, 0.8),
+      rgba(255, 255, 255, 0) 70%);
   top: 0;
   left: -100px;
   opacity: 0.6;
@@ -445,14 +477,8 @@ selectedcontent .option-text {
     left: 100%;
   }
 }
+
 /* Future Value Calculator (minimal, non-invasive enhancements) */
-.fmcContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  width: 90%;
-}
 .fmcContent {
   display: flex;
   flex-wrap: wrap;
@@ -462,7 +488,8 @@ selectedcontent .option-text {
   max-width: 640px;
   padding: 20px;
   margin-top: 8px;
-  background: rgba(40, 44, 55, 0.6); /* subtle surface that matches app */
+  background: rgba(40, 44, 55, 0.6);
+  /* subtle surface that matches app */
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.04);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
@@ -497,15 +524,16 @@ selectedcontent .option-text {
 #result {
   min-width: 220px;
   padding: 14px 16px;
-  background: linear-gradient(135deg, rgba(79,133,255,0.06), rgba(255,255,255,0.02));
+  background: linear-gradient(135deg, rgba(79, 133, 255, 0.06), rgba(255, 255, 255, 0.02));
   border-radius: 10px;
   color: var(--primary);
   font-weight: 700;
   text-align: center;
-  border: 1px solid rgba(79,133,255,0.12);
-  box-shadow: inset 0 -6px 18px rgba(0,0,0,0.12);
+  border: 1px solid rgba(79, 133, 255, 0.12);
+  box-shadow: inset 0 -6px 18px rgba(0, 0, 0, 0.12);
 }
- .fmcButton {
+
+.fmcButton {
   max-width: 160px;
   padding: 12px 18px;
   font-size: 1rem;
@@ -518,11 +546,69 @@ selectedcontent .option-text {
   box-shadow: 0 6px 18px var(--shadow);
   transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
+
 .fmcButton:hover {
   background: #699dff;
   transform: scale(1.04);
   box-shadow: 0 10px 24px var(--shadow);
 }
+
+/* skeleton loading */
+.news-skeleton .news-card {
+  opacity: 1;
+}
+
+.skeleton-box {
+  background: linear-gradient(90deg, #2e2e2e 25%, #3a3a3a 37%, #2e2e2e 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+  border-radius: 6px;
+  display: block;
+}
+
+.skeleton-box.img {
+  width: 360px;
+  height: 180px;
+}
+
+.skeleton-box.title {
+  height: 22px;
+  width: 70%;
+  margin: 12px 0;
+}
+
+.skeleton-box.line {
+  height: 14px;
+  width: 95%;
+  margin: 6px 0;
+}
+
+.skeleton-box.line.short {
+  width: 60%;
+}
+
+.skeleton-box.chip {
+  height: 16px;
+  width: 60px;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.news-error {
+  color: #f55;
+  font-size: 0.9rem;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: -400% 0;
+  }
+}
+
 /* Small screens: stack controls for comfortable input */
 @media (max-width: 480px) {
   .fmcContent {
@@ -531,9 +617,11 @@ selectedcontent .option-text {
     padding: 16px;
     width: calc(100% - 32px);
   }
+
   .fmcContent input[type="number"] {
     width: 100%;
   }
+
   #result {
     width: 100%;
     min-width: 0;
@@ -549,39 +637,51 @@ selectedcontent .option-text {
     z-index: 100;
     height: 100%;
     transform: translateX(-100%);
-    width: 100%; /* Make sidebar full-width on mobile */
+    width: 100%;
+    /* Make sidebar full-width on mobile */
   }
+
   aside.open {
-    transform: translateX(0); /* Show sidebar */
+    transform: translateX(0);
+    /* Show sidebar */
   }
 
   /* On mobile, the 'closed' class from desktop should not affect layout */
   aside.closed {
-    width: 100%; /* Ensure it stays full-width if open */
+    width: 100%;
+    /* Ensure it stays full-width if open */
   }
+
   aside.closed .link-text,
   aside.closed .brand-logo {
-    display: block; /* Always show text when sidebar is open on mobile */
+    display: block;
+    /* Always show text when sidebar is open on mobile */
   }
+
   aside.closed .sideAction,
   aside.closed .sideElement {
-    justify-content: initial; /* Reset alignment for mobile */
+    justify-content: initial;
+    /* Reset alignment for mobile */
   }
 
   #sidebarToggle {
-    display: block; /* Show hamburger icon */
+    display: block;
+    /* Show hamburger icon */
   }
 
   #closeSidebarBtn {
-    display: block; /* Show close icon in the sidebar */
+    display: block;
+    /* Show close icon in the sidebar */
   }
 
   .header h1 {
     font-size: 1.2rem;
   }
+
   .header span {
     font-size: x-small;
   }
+
   /* Content should take full width on mobile, ignoring desktop classes */
   .content,
   .content.sidebar-closed {
@@ -592,13 +692,17 @@ selectedcontent .option-text {
   .inputs {
     flex-direction: column;
   }
+
   .reverse {
     transform: rotate(90deg);
   }
+
   .reverse:hover {
     transform: rotate(270deg);
   }
+
   .news-card {
-    width: 100%; /* Make news card take full width on smaller screens */
+    width: 100%;
+    /* Make news card take full width on smaller screens */
   }
 }
