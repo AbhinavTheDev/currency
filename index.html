@@ -1,155 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./style.css" />
+    <title>Currency Converter</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-  <link rel="stylesheet" href="./style.css" />
-  <title>Currency Converter</title>
-</head>
-
-<body>
-  <main>
-    <aside>
-      <div class="sideAction">
-        <button class="brand-logo">
-          <img src="./assets/rupee.svg" alt="rupee" />
-        </button>
-        <button id="closeSidebarBtn">
-          <img src="./assets/close.svg" alt="close" />
-        </button>
-      </div>
-      <p id="converterOptBtn" class="sideElement">
-        <img src="./assets/change.svg" alt="change" /><span class="link-text">Converter</span>
-      </p>
-      <p id="newsOptBtn" class="sideElement">
-        <img src="./assets/news.svg" alt="news" /><span class="link-text">News</span>
-      </p>
-      <p id="fmcOptBtn" class="sideElement">
-        <img src="./assets/fmc.svg" alt="news" /><span class="link-text">FMC</span>
-      </p>
-    </aside>
-    <div class="content">
-      <button id="sidebarToggle">
-        <img src="./assets/sidebar.svg" alt="side" />
-      </button>
-      <div id="converterContainer" class="converterContainer" style="display: flex">
-        <div class="header">
-          <img src="./assets/rupee.svg" alt="rupee" />
-          <div class="hero">
-            <h1>Currency Converter</h1>
-            <span>
-              <p style="font-weight: normal">Powered By</p>
-              <a href="https://www.exchangerate-api.com/" target="_blank"
-                style="text-decoration: none; color: rgba(247, 4, 4, 0.897)">Exchange Rate API</a>
-            </span>
-          </div>
-        </div>
-        <div class="converter">
-          <div class="inputs">
-            <div class="input-group">
-              <label class="search-label">
-                <input type="number" name="text" class="input currency-one" id="currency-one" required
-                  placeholder="Enter amount..." />
-              </label>
-              <div class="select-wrapper">
-                <select name="from-currency" id="from-currency" class="select">
-                  <button>
-                    <selectedcontent></selectedcontent>
-                  </button>
-                </select>
-              </div>
-            </div>
-            <button class="reverse">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 2.1l4 4-4 4" />
-                <path d="M3 12.2v-2a4 4 0 0 1 4-4h14" />
-                <path d="M7 21.9l-4-4 4-4" />
-                <path d="M21 11.8v2a4 4 0 0 1-4 4H3" />
-              </svg>
-            </button>
-            <div class="input-group">
-              <label class="search-label">
-                <input type="number" name="text" class="input currency-two" id="currency-two" disabled
-                  placeholder="0.00" />
-              </label>
-              <div class="select-wrapper">
-                <select name="to-currency" id="to-currency" class="select">
-                  <button>
-                    <selectedcontent></selectedcontent>
-                  </button>
-                </select>
-              </div>
-            </div>
-          </div>
-          <button class="button" id="convert-btn">
-            Convert
-            <svg fill="currentColor" viewBox="0 0 24 24" class="icon">
-              <path clip-rule="evenodd"
-                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
-                fill-rule="evenodd"></path>
-            </svg>
+  <body>
+    <main>
+      <aside>
+        <div class="sideAction">
+          <button class="brand-logo">
+            <img src="./assets/rupee.svg" alt="rupee" />
+          </button>
+          <button id="closeSidebarBtn">
+            <img src="./assets/close.svg" alt="close" />
           </button>
         </div>
-      </div>
-      <div id="newsContainer" class="newsContainer" style="display: none">
-        <div class="header">
-          <img src="./assets/rupee.svg" alt="rupee" />
-          <div class="hero">
-            <h1>Currency News</h1>
-            <span>
-              <p style="font-weight: normal">Powered By</p>
-              <a href="https://www.bbc.com/" target="_blank" style="
+        <p id="converterOptBtn" class="sideElement">
+          <img src="./assets/change.svg" alt="change" /><span class="link-text"
+            >Converter</span
+          >
+        </p>
+        <p id="newsOptBtn" class="sideElement">
+          <img src="./assets/news.svg" alt="news" /><span class="link-text"
+            >News</span
+          >
+        </p>
+        <p id="fmcOptBtn" class="sideElement">
+          <img src="./assets/fmc.svg" alt="news" /><span class="link-text"
+            >FMC</span
+          >
+        </p>
+      </aside>
+      <div class="content">
+        <button id="sidebarToggle">
+          <img src="./assets/sidebar.svg" alt="side" />
+        </button>
+        <div
+          id="converterContainer"
+          class="converterContainer"
+          style="display: flex"
+        >
+          <div class="header">
+            <img src="./assets/rupee.svg" alt="rupee" />
+            <div class="hero">
+              <h1>Currency Converter</h1>
+              <span>
+                <p style="font-weight: normal">Powered By</p>
+                <a
+                  href="https://www.exchangerate-api.com/"
+                  target="_blank"
+                  style="text-decoration: none; color: rgba(247, 4, 4, 0.897)"
+                  >Exchange Rate API</a
+                >&
+                <a
+                  href="https://stats.bis.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style="
                     text-decoration: none;
-                    color: rgba(255, 255, 255, 0.897);
-                  ">BBC</a> &
-              <a href="https://www.theguardian.com/international" target="_blank" style="
-                    text-decoration: none;
-                    color: rgba(255, 255, 255, 0.897);
-                  ">The Guardian</a>
-            </span>
+                    color: rgba(255, 215, 215, 0.897);
+                  "
+                  >BIS</a
+                >
+              </span>
+            </div>
+          </div>
+          <div class="converter">
+            <div class="inputs">
+              <div class="input-group">
+                <label class="search-label">
+                  <input
+                    type="number"
+                    name="text"
+                    class="input currency-one"
+                    id="currency-one"
+                    required
+                    placeholder="Enter amount..."
+                  />
+                </label>
+                <div class="select-wrapper">
+                  <select
+                    name="from-currency"
+                    id="from-currency"
+                    class="select"
+                  >
+                    <button>
+                      <selectedcontent></selectedcontent>
+                    </button>
+                  </select>
+                </div>
+              </div>
+              <button class="reverse">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M17 2.1l4 4-4 4" />
+                  <path d="M3 12.2v-2a4 4 0 0 1 4-4h14" />
+                  <path d="M7 21.9l-4-4 4-4" />
+                  <path d="M21 11.8v2a4 4 0 0 1-4 4H3" />
+                </svg>
+              </button>
+              <div class="input-group">
+                <label class="search-label">
+                  <input
+                    type="number"
+                    name="text"
+                    class="input currency-two"
+                    id="currency-two"
+                    disabled
+                    placeholder="0.00"
+                  />
+                </label>
+                <div class="select-wrapper">
+                  <select name="to-currency" id="to-currency" class="select">
+                    <button>
+                      <selectedcontent></selectedcontent>
+                    </button>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <button class="button" id="convert-btn">
+              Convert
+              <svg fill="currentColor" viewBox="0 0 24 24" class="icon">
+                <path
+                  clip-rule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                  fill-rule="evenodd"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <div class="currencyChartContainer">
+            <label class="chartToggle">
+              <p>Show History Chart</p>
+              <input type="checkbox" name="chartToggle" id="chartToggle"
+            /></label>
+            <div class="currencyChart" id="currencyChart"></div>
           </div>
         </div>
-        <div id="newsBoard" class="newsBoard">
-          <ul id="newsList" style="
+        <div id="newsContainer" class="newsContainer" style="display: none">
+          <div class="header">
+            <img src="./assets/rupee.svg" alt="rupee" />
+            <div class="hero">
+              <h1>Currency News</h1>
+              <span>
+                <p style="font-weight: normal">Powered By</p>
+                <a
+                  href="https://www.bbc.com/"
+                  target="_blank"
+                  style="
+                    text-decoration: none;
+                    color: rgba(255, 255, 255, 0.897);
+                  "
+                  >BBC</a
+                >
+                &
+                <a
+                  href="https://www.theguardian.com/international"
+                  target="_blank"
+                  style="
+                    text-decoration: none;
+                    color: rgba(255, 255, 255, 0.897);
+                  "
+                  >The Guardian</a
+                >
+              </span>
+            </div>
+          </div>
+          <div id="newsBoard" class="newsBoard">
+            <ul
+              id="newsList"
+              style="
                 display: flex;
                 gap: 18px;
                 flex-wrap: wrap;
                 padding: 0;
                 list-style: none;
-              "></ul>
-        </div>
-      </div>
-      <div id="fmcContainer" class="fmcContainer" style="display: none">
-        <div class="header">
-          <img src="./assets/rupee.svg" alt="rupee" />
-          <div class="hero">
-            <h1>Future Value Calculator</h1>
+              "
+            ></ul>
           </div>
         </div>
-        <div id="fmcContent" class="fmcContent">
-          <p>Rupees</p>
-          <input type="number" name="" id="fmcAmount">
-          <p>With Inflation of</p>
-          <span>
-            <input type="number" name="" id="fmcInterest"> %</span>
-          <p>After</p><span>
-            <input type="number" name="" id="fmcYears">
-            years</span>
-          <button class="fmcButton">Will be</button>
-          <div id="result" class="result"></div>
+        <div id="fmcContainer" class="fmcContainer" style="display: none">
+          <div class="header">
+            <img src="./assets/rupee.svg" alt="rupee" />
+            <div class="hero">
+              <h1>Future Value Calculator</h1>
+            </div>
+          </div>
+          <div id="fmcContent" class="fmcContent">
+            <p>Rupees</p>
+            <input type="number" name="" id="fmcAmount" />
+            <p>With Inflation of</p>
+            <span> <input type="number" name="" id="fmcInterest" /> %</span>
+            <p>After</p>
+            <span>
+              <input type="number" name="" id="fmcYears" />
+              years</span
+            >
+            <button class="fmcButton">Will be</button>
+            <div id="result" class="result"></div>
+          </div>
         </div>
       </div>
-
-    </div>
-  </main>
-  <script type="module" src="./app.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xml2js@0.6.2/lib/xml2js.min.js"></script>
-</body>
-
+    </main>
+    <script type="module" src="./app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xml2js@0.6.2/lib/xml2js.min.js"></script>
+  </body>
 </html>

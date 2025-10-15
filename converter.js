@@ -4,6 +4,8 @@ const fromAmountInput = document.getElementById("currency-one");
 const toAmountInput = document.getElementById("currency-two");
 const reverseBtn = document.querySelector(".reverse");
 const convertBtn = document.getElementById("convert-btn");
+const chartToggle = document.getElementById("chartToggle");
+const converterContainer = document.getElementById("converterContainer");
 
 const API_BASE_URL = "https://open.er-api.com/v6/latest";
 const CACHE_MAX_AGE = 3600000; // 1 hour in milliseconds
@@ -237,7 +239,522 @@ reverseBtn.addEventListener("click", () => {
 
   // Trigger a new conversion
   convertCurrency();
+
+  // Trigger new chart on reverse
+  if (chartToggle.checked) {
+    loadCurrencyChart(fromCurrencySelect.value, toCurrencySelect.value);
+  }
 });
+class CurrencyChart {
+  constructor(options = {}) {
+    this.config = {
+      bisBaseUrl: "https://stats.bis.org/api/v1/data/WS_XRU",
+      cacheTimeout: 120 * 60 * 1000, // 1 hour
+      maxDataPoints: 2000,
+      retryAttempts: 3,
+      ...options,
+    };
+
+    this.currentChart = null;
+    this.statusCallback = null;
+    this.onError = null;
+    this.onSuccess = null;
+  }
+
+  // Set callbacks for status updates and events
+  setCallbacks({ onStatus, onError, onSuccess } = {}) {
+    this.statusCallback = onStatus;
+    this.onError = onError;
+    this.onSuccess = onSuccess;
+    return this;
+  }
+
+  // Main method to render chart for any currency pair
+  async renderChart(container, fromCurrency, toCurrency, options = {}) {
+    const {
+      startDate = this.getDefaultStartDate(),
+      endDate = this.getDefaultEndDate(),
+      theme = "light",
+      height = 420,
+    } = options;
+
+    // Validate inputs
+    if (!container || !fromCurrency || !toCurrency) {
+      throw new Error("Container, fromCurrency, and toCurrency are required");
+    }
+
+    // Setup canvas if not exists
+    const canvas = this.setupCanvas(container, height);
+    const pair = `${fromCurrency}-${toCurrency}`;
+    const meta = this.getCurrencyMeta(fromCurrency, toCurrency, theme);
+
+    this.updateStatus(`Loading ${meta.label}…`, "loading");
+
+    try {
+      let series = [];
+
+      if (fromCurrency === "USD") {
+        // Direct USD to target currency
+        series = await this.fetchSeries(
+          this.getCurrencyRefArea(toCurrency),
+          toCurrency,
+          startDate,
+          endDate
+        );
+      } else if (toCurrency === "USD") {
+        // Inverse: target to USD, then invert values
+        const directSeries = await this.fetchSeries(
+          this.getCurrencyRefArea(fromCurrency),
+          fromCurrency,
+          startDate,
+          endDate
+        );
+        series = directSeries.map((d) => ({
+          date: d.date,
+          value: 1 / d.value,
+        }));
+      } else {
+        // Cross-rate: need both currencies vs USD
+        const [fromUsdSeries, toUsdSeries] = await Promise.all([
+          this.fetchSeries(
+            this.getCurrencyRefArea(fromCurrency),
+            fromCurrency,
+            startDate,
+            endDate
+          ),
+          this.fetchSeries(
+            this.getCurrencyRefArea(toCurrency),
+            toCurrency,
+            startDate,
+            endDate
+          ),
+        ]);
+        series = this.calculateCrossRate(toUsdSeries, fromUsdSeries); // to/from = target per source
+      }
+
+      if (!series.length) {
+        this.updateStatus("No data available for the selected range.", "info");
+        this.renderEmptyChart(canvas, meta);
+        return { success: false, message: "No data available" };
+      }
+
+      // Downsample if needed
+      const { dates, values } = this.downsampleData(series);
+
+      // Render the chart
+      this.createChart(canvas, dates, values, meta);
+
+      const lastPoint = series[series.length - 1];
+      const successMessage = `${meta.label}: ${this.formatNumber(
+        lastPoint.value
+      )} (${lastPoint.date})`;
+      this.updateStatus(successMessage, "success");
+
+      if (this.onSuccess) {
+        this.onSuccess({
+          pair,
+          data: series,
+          meta,
+          lastValue: lastPoint.value,
+        });
+      }
+
+      return { success: true, data: series, meta };
+    } catch (error) {
+      console.error("Chart rendering error:", error);
+      const errorMessage = `Error loading ${meta.label}: ${error.message}`;
+      this.updateStatus(errorMessage, "error");
+      this.renderEmptyChart(canvas, meta);
+
+      if (this.onError) {
+        this.onError({ pair, error, meta });
+      }
+
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Setup canvas element
+  setupCanvas(container, height) {
+    let canvas = container.querySelector("canvas");
+    if (!canvas) {
+      canvas = document.createElement("canvas");
+      container.innerHTML = "";
+      container.appendChild(canvas);
+    }
+    container.style.height = `${height}px`;
+    container.style.position = "relative";
+    return canvas;
+  }
+
+  // Get currency metadata for styling
+  getCurrencyMeta(from, to, theme = "light") {
+    const colors = {
+      light: ["#2563eb", "#16a34a", "#dc2626", "#7c3aed", "#ea580c", "#0891b2"],
+      dark: ["#60a5fa", "#4ade80", "#f87171", "#a78bfa", "#fb923c", "#22d3ee"],
+    };
+
+    const colorIndex =
+      (from.charCodeAt(0) + to.charCodeAt(0)) % colors[theme].length;
+
+    return {
+      label: `${from} → ${to}`,
+      unit: `${to} per ${from}`,
+      color: colors[theme][colorIndex],
+      pair: `${from}-${to}`,
+    };
+  }
+
+  // Get BIS reference area code for currency
+  getCurrencyRefArea(currency) {
+    const mapping = {
+      INR: "IN",
+      CHF: "CH",
+      EUR: "XM",
+      JPY: "JP",
+      GBP: "GB",
+      AUD: "AU",
+      CAD: "CA",
+      CNY: "CN",
+      SEK: "SE",
+      NOK: "NO",
+      DKK: "DK",
+      NZD: "NZ",
+      MXN: "MX",
+      ZAR: "ZA",
+      BRL: "BR",
+      KRW: "KR",
+      SGD: "SG",
+      HKD: "HK",
+      PLN: "PL",
+      CZK: "CZ",
+      HUF: "HU",
+      ILS: "IL",
+      CLP: "CL",
+      PHP: "PH",
+      AED: "AE",
+      SAR: "SA",
+      MYR: "MY",
+      THB: "TH",
+      RUB: "RU",
+      TRY: "TR",
+    };
+    return mapping[currency] || currency.substring(0, 2);
+  }
+
+  // Fetch currency series from BIS API
+  async fetchSeries(refArea, currency, startDate, endDate) {
+    const url = this.buildApiUrl(refArea, currency, startDate, endDate);
+
+    try {
+      const data = await this.fetchWithCache(url);
+      return this.parseBISResponse(data);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Build BIS API URL
+  buildApiUrl(refArea, currency, startDate, endDate) {
+    const startYear = startDate ? new Date(startDate).getFullYear() : "";
+    const endYear = endDate ? new Date(endDate).getFullYear() : "";
+
+    const params = new URLSearchParams({
+      startPeriod: startYear,
+      endPeriod: endYear,
+      detail: "dataonly",
+    });
+
+    return `${this.config.bisBaseUrl}/D.${refArea}.${currency}.A/all?${params}`;
+  }
+
+  // Cache-enabled fetch with retry logic
+  async fetchWithCache(url) {
+    const cacheKey = `bis-cache:${url}`;
+
+    // Try cache first
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const { savedAt, data } = JSON.parse(cached);
+        if (Date.now() - savedAt < this.config.cacheTimeout) {
+          return data;
+        } else {
+          localStorage.removeItem(cacheKey);
+        }
+      }
+    } catch (e) {
+      console.log("Currency Chart Cache Errors:", e);
+    }
+
+    // Fetch with retry
+    const data = await this.fetchWithRetry(url);
+
+    // Cache the result
+    try {
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify({
+          savedAt: Date.now(),
+          data,
+        })
+      );
+    } catch (e) {
+      console.log("Currency Chart Cache Write Errors:", e);
+    }
+
+    return data;
+  }
+
+  // Fetch with exponential backoff retry
+  async fetchWithRetry(url) {
+    let lastError;
+
+    for (let attempt = 0; attempt < this.config.retryAttempts; attempt++) {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            Accept: "application/vnd.sdmx.data+json;version=1.0.0",
+            "Accept-Encoding": "identity",
+          },
+        });
+
+        if (response.status === 429 || response.status === 503) {
+          const delay =
+            Math.min(2000 * Math.pow(2, attempt), 10000) + Math.random() * 250;
+          this.updateStatus(
+            `Rate limited. Retrying in ${Math.round(delay)}ms...`,
+            "loading"
+          );
+          await this.sleep(delay);
+          continue;
+        }
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        lastError = error;
+        if (attempt < this.config.retryAttempts - 1) {
+          const delay =
+            Math.min(500 * Math.pow(2, attempt), 4000) + Math.random() * 250;
+          this.updateStatus(
+            `Network error. Retrying in ${Math.round(delay)}ms...`,
+            "loading"
+          );
+          await this.sleep(delay);
+        }
+      }
+    }
+
+    throw lastError || new Error("Failed after retries");
+  }
+
+  // Parse BIS SDMX-JSON response
+  parseBISResponse(json) {
+    const dataset = json?.data?.dataSets?.[0];
+    const series = dataset?.series;
+    if (!series) return [];
+
+    const firstSeriesKey = Object.keys(series)[0];
+    const observations = series[firstSeriesKey]?.observations || {};
+
+    const timeDimension = json?.data?.structure?.dimensions?.observation?.find(
+      (d) => d.id === "TIME_PERIOD"
+    );
+    const timeValues = timeDimension?.values || [];
+
+    const result = [];
+    for (const [index, observation] of Object.entries(observations)) {
+      const timeValue = timeValues[parseInt(index)];
+      const date = timeValue?.id || timeValue?.name;
+      const value = parseFloat(observation[0]);
+
+      if (date && Number.isFinite(value)) {
+        result.push({ date, value });
+      }
+    }
+
+    return result.sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  // Calculate cross-rate between two USD-based series
+  calculateCrossRate(numeratorSeries, denominatorSeries) {
+    const numeratorMap = new Map(numeratorSeries.map((d) => [d.date, d.value]));
+    const denominatorMap = new Map(
+      denominatorSeries.map((d) => [d.date, d.value])
+    );
+
+    const result = [];
+    for (const date of numeratorMap.keys()) {
+      if (denominatorMap.has(date)) {
+        const num = numeratorMap.get(date);
+        const den = denominatorMap.get(date);
+        if (Number.isFinite(num) && Number.isFinite(den) && den !== 0) {
+          result.push({ date, value: num / den });
+        }
+      }
+    }
+
+    return result.sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  // Downsample data if too dense
+  downsampleData(series) {
+    const step = Math.ceil(series.length / this.config.maxDataPoints);
+    const dates = [];
+    const values = [];
+
+    for (let i = 0; i < series.length; i += step) {
+      dates.push(series[i].date);
+      values.push(series[i].value);
+    }
+
+    return { dates, values };
+  }
+
+  // Create Chart.js chart
+  createChart(canvas, labels, data, meta) {
+    const ctx = canvas.getContext("2d");
+
+    if (this.currentChart) {
+      this.currentChart.destroy();
+    }
+
+    // Create gradient
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, this.hexToRGBA(meta.color, 0.2));
+    gradient.addColorStop(1, this.hexToRGBA(meta.color, 0.0));
+
+    this.currentChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: meta.label,
+            data,
+            borderColor: meta.color,
+            backgroundColor: gradient,
+            pointRadius: 0,
+            borderWidth: 2,
+            tension: 0.25,
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 250 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: "index",
+            intersect: false,
+            callbacks: {
+              label: (context) =>
+                `${meta.label}: ${this.formatNumber(context.parsed.y)}`,
+            },
+          },
+        },
+        interaction: { mode: "index", intersect: false },
+        scales: {
+          x: {
+            type: "category",
+            ticks: { maxRotation: 0, autoSkipPadding: 12 },
+            grid: { display: false },
+          },
+          y: {
+            ticks: { callback: (value) => this.formatNumber(value) },
+            grid: { color: "rgba(0,0,0,0.1)" },
+          },
+        },
+      },
+    });
+  }
+
+  // Render empty chart
+  renderEmptyChart(canvas, meta) {
+    this.createChart(canvas, [], [], meta);
+  }
+
+  // Utility methods
+  formatNumber(value) {
+    if (!Number.isFinite(value)) return "-";
+    return value.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 6,
+    });
+  }
+
+  hexToRGBA(hex, alpha = 1) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (!result) return `rgba(0,0,0,${alpha})`;
+
+    const r = parseInt(result[1], 16);
+    const g = parseInt(result[2], 16);
+    const b = parseInt(result[3], 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  updateStatus(message, type = "info") {
+    if (this.statusCallback) {
+      this.statusCallback(message, type);
+    }
+  }
+
+  sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  getDefaultStartDate() {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() - 1);
+    return date.toISOString().split("T")[0];
+  }
+
+  getDefaultEndDate() {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  // Cleanup method
+  destroy() {
+    if (this.currentChart) {
+      this.currentChart.destroy();
+      this.currentChart = null;
+    }
+  }
+}
+
+chartToggle.addEventListener("change", () => {
+  if (chartToggle.checked) {
+    loadCurrencyChart(fromCurrencySelect.value, toCurrencySelect.value);
+  } else {
+    // Hide or clear chart
+    const container = document.getElementById("currencyChart");
+    container.innerHTML = "";
+  }
+});
+
+function loadCurrencyChart(from, to) {
+  const container = document.getElementById("currencyChart");
+  const chart = new CurrencyChart({
+    maxDataPoints: 1500,
+  });
+
+  chart.setCallbacks({
+    onStatus: (msg, type) => {
+      console.log(`Currency chart: ${msg} (${type})`);
+    },
+  });
+  chart.renderChart(container, from, to, {
+    height: 250,
+    startDate: "2024-01-01",
+  });
+}
 
 function initialize() {
   populateDropdown(fromCurrencySelect, "USD");
