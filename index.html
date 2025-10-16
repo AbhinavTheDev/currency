@@ -86,6 +86,10 @@
                     id="currency-one"
                     required
                     placeholder="Enter amount..."
+                    inputmode="decimal"
+                    step="0.01"
+                    min="0"
+                    autocomplete="off"
                   />
                 </label>
                 <div class="select-wrapper">
@@ -100,7 +104,11 @@
                   </select>
                 </div>
               </div>
-              <button class="reverse">
+              <button
+                class="reverse"
+                title="Swap currencies"
+                aria-label="Swap currencies"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
@@ -125,7 +133,8 @@
                     name="text"
                     class="input currency-two"
                     id="currency-two"
-                    disabled
+                    readonly
+                    aria-readonly="true"
                     placeholder="0.00"
                   />
                 </label>
@@ -148,13 +157,22 @@
                 ></path>
               </svg>
             </button>
+            <div
+              id="conversionMeta"
+              class="conversionMeta"
+              aria-live="polite"
+            ></div>
           </div>
           <div class="currencyChartContainer">
             <label class="chartToggle">
               <p>Show History Chart</p>
               <input type="checkbox" name="chartToggle" id="chartToggle"
             /></label>
-            <div class="currencyChart" id="currencyChart"></div>
+            <div class="currencyChart" id="currencyChart">
+              <div id="chartLoader" class="chart-loader" style="display: none">
+                <div class="spinner"></div>
+              </div>
+            </div>
           </div>
         </div>
         <div id="newsContainer" class="newsContainer" style="display: none">

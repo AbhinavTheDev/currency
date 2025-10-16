@@ -6,6 +6,7 @@ const reverseBtn = document.querySelector(".reverse");
 const convertBtn = document.getElementById("convert-btn");
 const chartToggle = document.getElementById("chartToggle");
 const converterContainer = document.getElementById("converterContainer");
+const conversionMeta = document.getElementById("conversionMeta");
 
 const API_BASE_URL = "https://open.er-api.com/v6/latest";
 const CACHE_MAX_AGE = 3600000; // 1 hour in milliseconds
@@ -201,33 +202,62 @@ async function convertCurrency() {
   const toCurrency = toCurrencySelect.value;
   const amount = parseFloat(fromAmountInput.value);
 
-  if (isNaN(amount) || amount === 0) {
+  const toGroup = toAmountInput.closest(".input-group");
+  toGroup && toGroup.classList.remove("invalid");
+  conversionMeta.textContent = "";
+
+  if (isNaN(amount) || amount <= 0) {
     toAmountInput.value = "";
+    conversionMeta.textContent = "";
     return;
   }
 
+  convertBtn.disabled = true;
+  convertBtn.setAttribute("aria-busy", "true");
   convertBtn.innerText = "Converting...";
 
-  // Use a dynamic cache key based on the "from" currency
-  const cacheKey = `rates-${fromCurrency}`;
-  const rates = await fetchWithCache(
-    cacheKey,
-    () => fetchRates(fromCurrency),
-    CACHE_MAX_AGE
-  );
+  try {
+    // Short-circuit when same currency selected
+    if (fromCurrency === toCurrency) {
+      toAmountInput.value = amount.toFixed(2);
+      conversionMeta.textContent = `1 ${fromCurrency} = 1 ${toCurrency}`;
+      return;
+    }
 
-  if (rates && rates[toCurrency]) {
-    const rate = rates[toCurrency];
-    const result = (amount * rate).toFixed(2);
-    toAmountInput.value = result;
-    convertBtn.innerText = "Convert";
-  } else if (rates) {
-    toAmountInput.value = "N/A"; // Rate not available
+    const cacheKey = `rates-${fromCurrency}`;
+    const rates = await fetchWithCache(
+      cacheKey,
+      () => fetchRates(fromCurrency),
+      CACHE_MAX_AGE
+    );
+
+    if (rates && rates[toCurrency]) {
+      const rate = rates[toCurrency];
+      const result = (amount * rate).toFixed(2);
+      toAmountInput.value = result;
+      conversionMeta.textContent = `1 ${fromCurrency} = ${rate.toFixed(
+        4
+      )} ${toCurrency}`;
+    } else {
+      toAmountInput.value = "";
+      conversionMeta.textContent = "Conversion unavailable right now.";
+      toGroup && toGroup.classList.add("invalid");
+    }
+  } catch (e) {
+    toAmountInput.value = "";
+    conversionMeta.textContent = "Conversion failed. Please try again.";
+    toGroup && toGroup.classList.add("invalid");
+  } finally {
+    convertBtn.disabled = false;
+    convertBtn.removeAttribute("aria-busy");
     convertBtn.innerText = "Convert";
   }
 }
 
 convertBtn.addEventListener("click", convertCurrency);
+fromAmountInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") convertCurrency();
+});
 fromCurrencySelect.addEventListener("change", convertCurrency);
 toCurrencySelect.addEventListener("change", convertCurrency);
 
@@ -277,6 +307,16 @@ class CurrencyChart {
       theme = "light",
       height = 420,
     } = options;
+
+    // Show loader
+    const loader = container.querySelector("#chartLoader");
+    if (loader) loader.style.display = "flex";
+
+    // Remove previous chart if any
+    if (this.currentChart) {
+      this.currentChart.destroy();
+      this.currentChart = null;
+    }
 
     // Validate inputs
     if (!container || !fromCurrency || !toCurrency) {
@@ -371,6 +411,9 @@ class CurrencyChart {
       }
 
       return { success: false, error: error.message };
+    } finally {
+      // Hide loader after chart is rendered or on error
+      if (loader) loader.style.display = "none";
     }
   }
 
